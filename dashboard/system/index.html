@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+	<meta charset="UTF-8">
+	<title>System Dashboard</title>
+
+	<link rel="stylesheet" href="style.css">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+	<h1>System Dashboard</h1>
+
+	<div class="uptime-box">
+		<strong>Betriebszeit:</strong> <span id="uptime">Lade...</span>
+	</div>
+
+	<div class="nav-buttons">
+		<button onclick="prevDay()">Vorheriger Tag</button>
+		<button onclick="goToToday()">Heute</button>
+		<button onclick="nextDay()">Nächster Tag</button>
+		<input type="date" id="dayPicker" class="day-picker">
+	</div>
+
+	<div class="grid">
+		<div class="chart-container" data-chart="mcu">
+			<h3>MCU Auslastung</h3>
+			<canvas id="mcuChart"></canvas>
+		</div>
+
+		<div class="chart-container" data-chart="ram">
+			<h3>RAM Auslastung</h3>
+			<canvas id="ramChart"></canvas>
+		</div>
+
+		<div class="chart-container" data-chart="wifi">
+			<h3>WiFi RSSI</h3>
+			<canvas id="wifiChart"></canvas>
+		</div>
+
+		<div class="chart-container" data-chart="temp">
+			<h3>MCU Temperatur</h3>
+			<canvas id="tempChart"></canvas>
+		</div>
+	</div>
+
+	<!-- Overlay -->
+	<div id="overlay" class="overlay hidden">
+		<div class="overlay-content">
+			<button class="close-btn" onclick="closeOverlay()">Schließen</button>
+			<canvas id="overlayCanvas"></canvas>
+		</div>
+	</div>
+
+	<script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+# IDE
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# Environments
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+cache/
+tmp/
+temp/
+
+# Database files
+*.sqlite
+*.db
+
+# Backup files
+*.bak
+*.sql
+*.tar.gz
