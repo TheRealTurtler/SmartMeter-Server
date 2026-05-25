@@ -90,7 +90,9 @@ function shouldAutoRefresh(date) {
 }
 
 function formatDay(d) {
-	return d.toISOString().split("T")[0];
+	return d.getFullYear() + "-" +
+		String(d.getMonth() + 1).padStart(2, "0") + "-" +
+		String(d.getDate()).padStart(2, "0");
 }
 
 function apiFormat(d) {
@@ -261,28 +263,43 @@ function applyDataset(json) {
 }
 
 /* ---------------------------
-   Load Day
+   Unified Date Fetch
 ----------------------------*/
 
-function loadDay(day) {
-	lastDatasetTime = 0;
-
+function fetchDay(day) {
 	const from = new Date(day);
 	from.setHours(0, 0, 0, 0);
 
 	const to = new Date(day);
 	to.setHours(23, 59, 59, 999);
 
-	dayPicker.value = formatDay(day);
+	return fetch(`${API}?from=${apiFormat(from)}&to=${apiFormat(to)}`)
+		.then(r => r.json());
+}
 
-	fetch(`${API}?from=${apiFormat(from)}&to=${apiFormat(to)}`)
-		.then(r => r.json())
-		.then(json => {
-			applyDataset(json);
+/* ---------------------------
+   Apply State
+----------------------------*/
 
-			updateAutoRefreshState();
-			scheduleMidnightSwitch();
-		});
+function applyDay(day, json) {
+	currentDay = new Date(day);
+
+	dayPicker.value = formatDay(currentDay);
+
+	applyDataset(json);
+
+	updateAutoRefreshState();
+	scheduleMidnightSwitch();
+}
+
+/* ---------------------------
+   Load Day
+----------------------------*/
+
+function loadDay(day) {
+	lastDatasetTime = 0;
+
+	fetchDay(day).then(json => applyDay(day, json));
 }
 
 /* ---------------------------
@@ -292,15 +309,7 @@ function loadDay(day) {
 function fetchAndUpdateIfNeeded() {
 	if (!shouldAutoRefresh(currentDay)) return;
 
-	const from = new Date(currentDay);
-	from.setHours(0, 0, 0, 0);
-
-	const to = new Date(currentDay);
-	to.setHours(23, 59, 59, 999);
-
-	fetch(`${API}?from=${apiFormat(from)}&to=${apiFormat(to)}`)
-		.then(r => r.json())
-		.then(applyDataset);
+	fetchDay(currentDay).then(applyDataset);
 }
 
 function updateAutoRefreshState() {
