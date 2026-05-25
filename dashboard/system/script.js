@@ -12,6 +12,42 @@ let lastDatasetTime = 0;
 const dayPicker = document.getElementById("dayPicker");
 
 /* ---------------------------
+   No Data Plugin
+----------------------------*/
+
+const noDataPlugin = {
+	id: "noDataPlugin",
+	afterDraw(chart) {
+		const datasets = chart.data.datasets || [];
+
+		const hasData = datasets.some(ds =>
+			Array.isArray(ds.data) &&
+			ds.data.some(v => v !== null && v !== undefined)
+		);
+
+		if (hasData) return;
+
+		const { ctx, chartArea } = chart;
+
+		if (!chartArea) return;
+
+		const x = (chartArea.left + chartArea.right) / 2;
+		const y = (chartArea.top + chartArea.bottom) / 2;
+
+		ctx.save();
+
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		ctx.font = "16px Arial";
+		ctx.fillStyle = "#6b7280";
+
+		ctx.fillText("Keine Daten", x, y);
+
+		ctx.restore();
+	}
+};
+
+/* ---------------------------
    Date Picker
 ----------------------------*/
 
@@ -87,7 +123,7 @@ function getNextMidnight() {
 }
 
 function getLatestTimestamp(rows) {
-	if (!rows || rows.length === 0) return 0;
+	if (!rows || rows.length === 0) return null;
 	return Math.max(...rows.map(r => r.time_dataset || 0));
 }
 
@@ -108,7 +144,6 @@ function mapTo24h(rows, key) {
 
 	rows.forEach(r => {
 		const d = new Date(r.time_dataset * 1000);
-
 		const slot = d.getHours() * 12 + Math.floor(d.getMinutes() / 5);
 		arr[slot] = r[key];
 	});
@@ -132,6 +167,9 @@ function extractData(rows) {
 function makeChart(ctx, data, color, yConfig) {
 	return new Chart(ctx, {
 		type: "line",
+
+		plugins: [noDataPlugin],
+
 		data: {
 			labels,
 			datasets: [{
@@ -141,6 +179,7 @@ function makeChart(ctx, data, color, yConfig) {
 				pointRadius: 0
 			}]
 		},
+
 		options: {
 			responsive: true,
 			maintainAspectRatio: false,
@@ -156,6 +195,8 @@ function makeChart(ctx, data, color, yConfig) {
 				tooltip: { enabled: true, mode: "index" }
 			},
 
+			animation: false,
+
 			elements: {
 				point: { radius: 0 },
 				line: { borderWidth: 2 }
@@ -165,7 +206,21 @@ function makeChart(ctx, data, color, yConfig) {
 				x: {
 					ticks: { maxTicksLimit: 24 }
 				},
-				y: yConfig
+				y: {
+					min: yConfig.min,
+					max: yConfig.max,
+					title: {
+						display: true,
+						text: yConfig.label,
+						font: {
+							size: 12,
+							weight: "bold"
+						}
+					},
+					ticks: {
+						autoSkip: true
+					}
+				}
 			}
 		}
 	});
@@ -183,7 +238,7 @@ const colors = {
 };
 
 /* ---------------------------
-   Unified API apply
+   Dataset handling
 ----------------------------*/
 
 function applyDataset(json) {
@@ -196,9 +251,11 @@ function applyDataset(json) {
 
 	const latest = getLatestTimestamp(rows);
 
-	if (latest <= lastDatasetTime) return;
+	if (latest !== null) {
+		if (latest <= lastDatasetTime) return;
 
-	lastDatasetTime = latest;
+		lastDatasetTime = latest;
+	}
 
 	drawCharts(rows);
 }
@@ -293,10 +350,10 @@ function drawCharts(rows) {
 	};
 
 	const configs = [
-		[mcuChart, data.mcu, colors.mcu, { min: 0, max: 100 }],
-		[ramChart, data.ram, colors.ram, { min: 0, max: 100 }],
-		[wifiChart, data.wifi, colors.wifi, { min: -100, max: -50 }],
-		[tempChart, data.temp, colors.temp, { min: 0, max: 80 }]
+		[mcuChart, data.mcu, colors.mcu, { min: 0, max: 100, label: "Auslastung [%]" }],
+		[ramChart, data.ram, colors.ram, { min: 0, max: 100, label: "Auslastung [%]" }],
+		[wifiChart, data.wifi, colors.wifi, { min: -100, max: -50, label: "Signalstärke [dBm]" }],
+		[tempChart, data.temp, colors.temp, { min: 0, max: 80, label: "Temperatur [°C]" }]
 	];
 
 	configs.forEach(([el, d, col, y]) => {
@@ -312,6 +369,8 @@ function drawCharts(rows) {
 ----------------------------*/
 
 function openOverlay(chartConfig) {
+	document.body.classList.add("no-scroll");
+
 	document.getElementById("overlay").classList.remove("hidden");
 
 	const ctx = document.getElementById("overlayCanvas").getContext("2d");
@@ -322,6 +381,8 @@ function openOverlay(chartConfig) {
 }
 
 function closeOverlay() {
+	document.body.classList.remove("no-scroll");
+
 	document.getElementById("overlay").classList.add("hidden");
 
 	if (overlayChart) {
@@ -329,6 +390,12 @@ function closeOverlay() {
 		overlayChart = null;
 	}
 }
+
+document.getElementById("overlay").addEventListener("click", (e) => {
+	if (e.target.id === "overlay") {
+		closeOverlay();
+	}
+});
 
 /* ---------------------------
    Navigation
