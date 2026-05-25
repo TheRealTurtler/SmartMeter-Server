@@ -1,53 +1,184 @@
-body {
-	font-family: Arial;
-	margin: 20px;
-	background: #f4f4f4;
+:root {
+	--bg: #f5f7fb;
+	--card: #ffffff;
+	--border: #e5e7eb;
+
+	--text: #1f2937;
+	--muted: #6b7280;
+
+	--shadow:
+		0 2px 8px rgba(0, 0, 0, 0.05),
+		0 8px 24px rgba(0, 0, 0, 0.04);
+
+	--radius: 14px;
+
+	--accent: #2563eb;
+	--accent-hover: #1d4ed8;
+
+	--danger: #dc2626;
 }
 
-.uptime-box {
-	background: #fff;
-	padding: 15px;
-	border-radius: 8px;
-	margin-bottom: 20px;
-	display: inline-block;
-}
-
-.nav-buttons {
-	margin-bottom: 20px;
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 10px;
-}
-
-button,
-.day-picker {
-	height: 36px;
-	padding: 0 14px;
-	border-radius: 8px;
-	border: none;
-	background: #fff;
-	color: #333;
-	font-size: 14px;
+* {
 	box-sizing: border-box;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-	transition: 0.2s;
-	line-height: 1;
 }
 
-.day-picker {
-	appearance: none;
-	-webkit-appearance: none;
-	-moz-appearance: none;
+body {
+	font-family:
+		Inter,
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		sans-serif;
+
+	margin: 0;
+	padding: 32px;
+
+	background: var(--bg);
+	color: var(--text);
+}
+
+body.no-scroll {
 	overflow: hidden;
 }
 
+/* ---------------------------
+   Headings
+----------------------------*/
+
+h1 {
+	margin-top: 0;
+	margin-bottom: 24px;
+
+	font-size: 2rem;
+	font-weight: 700;
+	letter-spacing: -0.03em;
+}
+
+/* ---------------------------
+   Uptime Box
+----------------------------*/
+
+.uptime-box {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+
+	padding: 14px 18px;
+	margin-bottom: 24px;
+
+	background: var(--card);
+
+	border-radius: var(--radius);
+	border: 1px solid var(--border);
+
+	box-shadow: var(--shadow);
+
+	font-size: 15px;
+}
+
+#uptime {
+	font-weight: 600;
+	color: var(--accent);
+}
+
+/* ---------------------------
+   Navigation
+----------------------------*/
+
+.nav-buttons {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+
+	margin-bottom: 28px;
+}
+
+.nav-group {
+	display: flex;
+	gap: 12px;
+}
+
+/* ---------------------------
+   Buttons + Date Picker
+----------------------------*/
+
+button,
+.day-picker {
+	height: 42px;
+
+	padding: 0 18px;
+
+	border: 1px solid var(--border);
+	border-radius: 12px;
+
+	background: var(--card);
+
+	color: var(--text);
+
+	font-size: 14px;
+	font-weight: 500;
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	cursor: pointer;
+
+	box-shadow: var(--shadow);
+
+	transition:
+		transform 0.15s ease,
+		box-shadow 0.15s ease,
+		background 0.15s ease;
+}
+
+button:hover,
+.day-picker:hover {
+	transform: translateY(-1px);
+
+	box-shadow:
+		0 4px 12px rgba(0, 0, 0, 0.08),
+		0 12px 28px rgba(0, 0, 0, 0.06);
+}
+
+button:active,
+.day-picker:active {
+	transform: translateY(0);
+}
+
+button:focus,
+.day-picker:focus {
+	outline: none;
+	border-color: var(--accent);
+
+	box-shadow:
+		0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.icon-btn {
+	width: 42px;
+	padding: 0;
+
+	font-size: 18px;
+	font-weight: 700;
+}
+
+/* ---------------------------
+   Date Picker
+----------------------------*/
+
+.day-picker {
+	min-width: 170px;
+	text-align: center;
+
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
 .day-picker::-webkit-calendar-picker-indicator {
-	opacity: 0.7;
+	opacity: 0.65;
 	cursor: pointer;
 	transition: 0.2s;
 }
@@ -57,48 +188,84 @@ button,
 	transform: scale(1.05);
 }
 
-button:hover,
-.day-picker:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-button:focus,
-.day-picker:focus {
-	outline: none;
-	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15);
-}
+/* ---------------------------
+   Grid Layout
+----------------------------*/
 
 .grid {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 20px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 24px;
 }
 
+/* ---------------------------
+   Chart Cards
+----------------------------*/
+
 .chart-container {
-	background: #fff;
-	padding: 10px;
-	border-radius: 8px;
+	position: relative;
+
+	background: var(--card);
+
+	padding: 18px;
+
+	border-radius: var(--radius);
+	border: 1px solid var(--border);
+
+	box-shadow: var(--shadow);
+
 	cursor: pointer;
+
+	transition:
+		transform 0.18s ease,
+		box-shadow 0.18s ease;
 }
+
+.chart-container:hover {
+	transform: translateY(-2px);
+
+	box-shadow:
+		0 6px 18px rgba(0, 0, 0, 0.08),
+		0 18px 40px rgba(0, 0, 0, 0.06);
+}
+
+.chart-container h3 {
+	margin-top: 0;
+	margin-bottom: 14px;
+
+	font-size: 1rem;
+	font-weight: 600;
+
+	color: var(--text);
+}
+
+/* ---------------------------
+   Charts
+----------------------------*/
 
 canvas {
 	width: 100%;
-	height: 200px !important;
+	height: 220px !important;
 }
 
-/* ---------- Overlay ---------- */
+/* ---------------------------
+   Overlay
+----------------------------*/
 
 .overlay {
 	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background: rgba(0, 0, 0, 0.75);
+	inset: 0;
+
 	display: flex;
-	justify-content: center;
 	align-items: center;
+	justify-content: center;
+
+	padding: 10px;
+
+	background: rgba(15, 23, 42, 0.72);
+
+	backdrop-filter: blur(6px);
+
 	z-index: 2000;
 }
 
@@ -107,25 +274,140 @@ canvas {
 }
 
 .overlay-content {
-	background: #fff;
-	padding: 20px;
-	border-radius: 12px;
-	width: 90%;
-	max-width: 1200px;
+	position: relative;
+
+	width: min(1200px, 100%);
+	padding: 12px;
+
+	background: var(--card);
+
+	border-radius: 20px;
+
+	box-shadow:
+		0 12px 40px rgba(0, 0, 0, 0.2);
 }
 
+/* ---------------------------
+   Close Button
+----------------------------*/
+
 .close-btn {
-	float: right;
-	padding: 6px 12px;
-	margin-bottom: 10px;
-	background: #d62828;
-	color: #fff;
+	position: absolute;
+	top: 16px;
+	right: 16px;
+
+	height: 38px;
+	padding: 0 16px;
+
 	border: none;
-	border-radius: 6px;
-	cursor: pointer;
+
+	background: var(--danger);
+	color: white;
+
+	font-weight: 600;
 }
+
+.close-btn:hover {
+	background: #b91c1c;
+}
+
+/* ---------------------------
+   Overlay Chart
+----------------------------*/
 
 #overlayCanvas {
 	width: 100% !important;
-	height: 500px !important;
+	height: 520px !important;
+}
+
+.close-x {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+
+	width: 32px;
+	height: 32px;
+
+	border: none;
+	border-radius: 8px;
+
+	background: rgba(0, 0, 0, 0.05);
+	color: #111;
+
+	font-size: 20px;
+	font-weight: bold;
+
+	cursor: pointer;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	transition: 0.2s;
+}
+
+.close-x:hover {
+	background: rgba(0, 0, 0, 0.1);
+}
+
+/* ---------------------------
+   Tablet + Mobile
+----------------------------*/
+
+@media screen and (max-width: 900px) {
+	body {
+		padding: 20px;
+	}
+
+	h1 {
+		font-size: 1.6rem;
+	}
+
+	.grid {
+		grid-template-columns: 1fr !important;
+	}
+
+	canvas {
+		height: 240px !important;
+	}
+
+	#overlayCanvas {
+		height: 420px !important;
+	}
+
+	.nav-buttons {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.nav-group {
+		display: flex;
+		width: 100%;
+	}
+
+	.nav-group button {
+		flex: 1;
+	}
+
+	.day-picker {
+		width: 100%;
+	}
+}
+
+/* ---------------------------
+   Small Mobile
+----------------------------*/
+
+@media screen and (max-width: 700px) {
+	.chart-container {
+		padding: 16px;
+	}
+
+	canvas {
+		height: 200px !important;
+	}
+
+	#overlayCanvas {
+		height: 360px !important;
+	}
 }
